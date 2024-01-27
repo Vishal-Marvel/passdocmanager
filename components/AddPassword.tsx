@@ -27,10 +27,10 @@ const formSchema = z.object({
 
     key: z.string().min(1, "Key is required"),
     value: z.string().min(1, "Value is required"),
-    password: z.string().min(8, "Password Is required")
+    password: z.string().min(8, "Password Should be minimum of length 8")
 });
 
-const AddPassword = () => {
+const AddPassword = ({onSubmitChange}:{onSubmitChange:()=>void}) => {
     const [isOpen, setOpen] = useState(false);
     const [message, setMessage] = useState("");
     const form = useForm({
@@ -55,22 +55,22 @@ const AddPassword = () => {
             setMessage("Saving data...")
             await axios.post("/api/addPassword", data);
             setMessage("")
-            toast("Record Added")
+            toast("Record Added");
+            onSubmitChange();
             setOpen(false);
             form.reset()
         } catch (error) {
-            // @ts-ignore
-            // if (error.response.data === "Password Incorrect"){
-            //     form.setError("password", {message:"Incorrect Password"});
-            // }
-            toast(<><AlertCircle className="h-4 w-4"/>{error.response.data.error}</>)
-            // setMessage("")
+            if (error.response.data === "Password Incorrect"){
+                form.setFocus("password");
+            }
+            toast(<><AlertCircle className="h-4 w-4"/>{error.response.data}</>)
+            setMessage("")
             // console.error(error)
         }
     };
     return (
         <Dialog open={isOpen} onOpenChange={()=>setOpen(!isOpen)}>
-            <DialogTrigger className={cn(buttonVariants({variant: "default"}), "gap-2 flex w-full")}>
+            <DialogTrigger className={cn(buttonVariants({variant: "default"}), "gap-2 flex w-full md:w-1/3")}>
                <PlusCircle/> Securely Add One
             </DialogTrigger>
             <DialogContent>

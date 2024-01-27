@@ -90,7 +90,7 @@ export const PasswordBox = ({ password }: { password: Password }) => {
                 setOpen(false);
                 setNewValue("");
                 setValue("");
-                toast("Deleted")
+                toast("Data Deleted")
             } else {
                 const data = {
                     id: password.id,
@@ -153,11 +153,11 @@ export const PasswordBox = ({ password }: { password: Password }) => {
     return (
         <Dialog open={isOpen} onOpenChange={() => { setValue("*************"); setNewValue(""); setOpen(!isOpen) }}>
             <DialogTrigger>
-                <div className="min-w-[50px] border-2 border-fuchsia-400 m-2 p-2 rounded-2xl shadow-xl shadow-fuchsia-200 transform-all duration-200 hover:scale-125 hover:ml-6 hover:mr-6  cursor-pointer text-center ">
+                <div className="min-w-[50px] max-w-[300px] overflow-hidden border-2 border-fuchsia-400 m-2 p-2 pr-3 pl-3 rounded-2xl shadow-xl shadow-fuchsia-200 transform-all duration-200 hover:scale-125 hover:m-6 ease-in cursor-pointer text-center ">
                     <span className="font-bold ">{password.key}</span>
                 </div>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="overflow-hidden">
                 <DialogHeader>
                     <DialogTitle>
                         View Password
@@ -167,7 +167,7 @@ export const PasswordBox = ({ password }: { password: Password }) => {
                     <div className={cn("flex flex-col ", isEdit ? "" : "mb-5")}>
                         <div className="flex-col flex gap-2">
                             <Label>Key:</Label>
-                            <span className="w-full  rounded-xl p-2 font-semibold">{password.key}</span>
+                            <span className="w-full  rounded-xl p-2 font-semibold max-w-[450px] overflow-auto">{password.key}</span>
                         </div>
                         {!isEdit && !isDelete &&
                             <div className="flex-col flex gap-2 mt-3">
@@ -242,7 +242,7 @@ export const PasswordBox = ({ password }: { password: Password }) => {
 
                             <div className="flex flex-row gap-4 pt-2">
                                 {isDelete &&
-                                    <Button variant={"outline"} className="w-1/2" onClick={handleCancelDelete}>Cancel Delete</Button>
+                                    <Button type="button" variant={"outline"} className="w-1/2" onClick={handleCancelDelete}>Cancel Delete</Button>
                                 }
                                 <Button className={cn(isDelete ? "w-1/2" : "w-full")} disabled={isLoading} type="submit">Submit To {isEdit ? "Edit" : isDelete ? "Delete" : "View"}</Button>
                             </div>

@@ -27,7 +27,7 @@ async function compareStrings(originalString: string, hashedString: string) {
 }
 
 
-export async function PUT(
+export async function POST(
     req: Request
 ) {
     try {
@@ -43,7 +43,8 @@ export async function PUT(
 
         const record = await db.password.findFirst({
             where: {
-                key
+                key,
+                userId:user.id
             }
         })
         if (record) {

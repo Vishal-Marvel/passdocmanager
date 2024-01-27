@@ -134,12 +134,11 @@ export async function GET() {
                 userId: user.id
             }
         });
-        const objWithoutCertainFields = pairs.map((pair) => {
+        const objWithoutCertainFields = pairs.map((pair:any) => {
             return Object.fromEntries(
                 Object.entries(pair).filter(([key]) => key !== 'userId' && key !== 'salt' && key !== 'value')
             )
         });
-        console.log(pairs)
         return NextResponse.json(objWithoutCertainFields);
 
 
