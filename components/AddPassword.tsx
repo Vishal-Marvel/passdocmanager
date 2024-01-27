@@ -59,11 +59,13 @@ const AddPassword = ({onSubmitChange}:{onSubmitChange:()=>void}) => {
             onSubmitChange();
             setOpen(false);
             form.reset()
-        } catch (error) {
+        } catch (error:any) {
+            if (error.response){
             if (error.response.data === "Password Incorrect"){
                 form.setFocus("password");
             }
             toast(<><AlertCircle className="h-4 w-4"/>{error.response.data}</>)
+            }
             setMessage("")
             // console.error(error)
         }
