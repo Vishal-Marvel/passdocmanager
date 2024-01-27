@@ -15,7 +15,7 @@ model Users {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   viewPassword  String
   authenticated Boolean @default(false)
-  email         String  @unique
+  userId         String  @unique
 }
 
 model Docuement {
@@ -30,4 +30,5 @@ model Password {
   userId String
   key    String
   value  String
+  salt   String
 }

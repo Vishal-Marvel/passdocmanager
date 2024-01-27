@@ -18,6 +18,8 @@ import axios from "axios";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import {Progress} from "@/components/ui/progress";
+import { encryptReq } from '@/lib/encryption';
+import { toast } from 'sonner';
 
 
 const formSchema = z.object({
@@ -102,8 +104,9 @@ export default function SignUpComponent() {
                 form.setFocus("password");
                 return;
             }
-            await axios.post("/api/saveUser", {viewPassword:values.password});
+            await axios.post("/api/saveUser", {viewPassword:encryptReq(values.password, values.password)});
             form.reset()
+            toast("Password Saved")
             router.push('/');
         } catch (error) {
             console.error(error)

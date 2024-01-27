@@ -1,18 +1,18 @@
-import {currentUser} from "@clerk/nextjs";
+import {auth, redirectToSignIn} from "@clerk/nextjs";
+
 
 import {db} from "@/lib/db";
-import {Users} from "@prisma/client";
 
 export const currentProfile = async () => {
-    const user = await currentUser();
+    const {userId} =  auth();
 
-    if (!user) {
-        return null;
+    if (!userId) {
+        return redirectToSignIn();
     }
 
-    const profile: Users|null = await db.users.findUnique({
+    const profile = await db.users.findUnique({
         where: {
-            email: user.emailAddresses[0].emailAddress
+            userId
         }
     });
     return profile;

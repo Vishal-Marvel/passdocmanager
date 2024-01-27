@@ -4,6 +4,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -16,6 +17,11 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import {useState} from "react";
+import { PlusCircle ,AlertCircle} from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { encryptReq } from "@/lib/encryption";
 
 const formSchema = z.object({
 
@@ -26,6 +32,7 @@ const formSchema = z.object({
 
 const AddPassword = () => {
     const [isOpen, setOpen] = useState(false);
+    const [message, setMessage] = useState("");
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -36,24 +43,35 @@ const AddPassword = () => {
     });
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        
         try {
-
-
-            await axios.post("/api/password", values);
+            setMessage("Encrypting Data")
+            
+            const data = {
+                key:values.key, 
+                value:encryptReq(values.password, values.value), 
+                password:encryptReq(values.password, values.password)
+            }
+            setMessage("Saving data...")
+            await axios.post("/api/addPassword", data);
+            setMessage("")
+            toast("Record Added")
             setOpen(false);
             form.reset()
         } catch (error) {
             // @ts-ignore
-            if (error.response.data === "Password Incorrect"){
-                form.setError("password", {message:"Incorrect Password"});
-            }
-            console.error(error)
+            // if (error.response.data === "Password Incorrect"){
+            //     form.setError("password", {message:"Incorrect Password"});
+            // }
+            toast(<><AlertCircle className="h-4 w-4"/>{error.response.data.error}</>)
+            // setMessage("")
+            // console.error(error)
         }
     };
     return (
         <Dialog open={isOpen} onOpenChange={()=>setOpen(!isOpen)}>
-            <DialogTrigger className={buttonVariants({variant: "default"})}>
-                Securely Add One
+            <DialogTrigger className={cn(buttonVariants({variant: "default"}), "gap-2 flex w-full")}>
+               <PlusCircle/> Securely Add One
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -130,6 +148,9 @@ const AddPassword = () => {
                     </form>
                 </Form>
                 </div>
+                <DialogFooter>
+                    <span className="text-sm">{message}</span>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )
