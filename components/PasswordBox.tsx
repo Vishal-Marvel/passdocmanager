@@ -86,6 +86,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                 await axios.put("api/password", data);
                 setMessage("")
                 onSubmitChange();
+                getCategories();
                 form.reset();
                 setIsEdit(false);
                 toast("Value Updated")
