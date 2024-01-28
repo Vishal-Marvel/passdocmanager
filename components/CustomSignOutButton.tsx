@@ -30,7 +30,7 @@ const CustomSignOutButton = () => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => signOut(() => router.push("/"))}>Sign Out</AlertDialogAction>
+                    <AlertDialogAction onClick={() => signOut(() => router.push("/sign-in"))}>Sign Out</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
