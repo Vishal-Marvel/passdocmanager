@@ -20,6 +20,7 @@ import {useEffect, useState} from "react";
 import {Progress} from "@/components/ui/progress";
 import { encryptReq } from '@/lib/encryption';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 
 const formSchema = z.object({
@@ -124,7 +125,7 @@ export default function SignUpComponent() {
 
     return (
         <div className={"w-full h-screen flex justify-center items-center"}>
-            <Card className="w-1/3  ">
+            <Card className="lg:w-1/3 md:w-2/4 w-4/5">
                 <CardHeader>
                     <CardTitle>Set Password</CardTitle>
                     <CardDescription>This password is used for accessing the documents and passwords stored. <strong>This
@@ -178,7 +179,7 @@ export default function SignUpComponent() {
                             <span className={"text-sm text-center mt-2"}>{feedback}</span>
 
                             <div className="flex flex-col space-y-1.5 pt-2">
-                                <Button disabled={isLoading} type="submit">Sign Up</Button>
+                                <Button disabled={isLoading} type="submit">{isLoading && <Loader2 className='h-4 w-4 animate-spin'/>}Sign Up</Button>
                             </div>
                         </form>
                     </Form>

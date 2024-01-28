@@ -2,14 +2,9 @@ import {NextResponse} from "next/server";
 
 import {currentUser} from "@clerk/nextjs";
 import {db} from "@/lib/db";
-import bcrypt from "bcrypt";
-import { User } from "@clerk/nextjs/server";
+import { hashString } from "@/lib/encryption-server";
 
 
-async function hashString(inputString:string) {
-    const saltRounds = 15;
-    return await bcrypt.hash(inputString, saltRounds);
-}
 
 
 export async function POST(
@@ -22,7 +17,7 @@ export async function POST(
             return new NextResponse("UnAuthenticated", {status:401})
         }
         // @ts-ignore
-        const existingProfile = await db.users.findUnique({
+        const existingProfile = await db.user.findUnique({
             where: {
                 userId: user.id
             }
@@ -30,10 +25,9 @@ export async function POST(
         if (existingProfile){
             return new NextResponse("User Already Exists", {status: 400})
         }
-        console.log(viewPassword);
         const password = await hashString(viewPassword);
 
-        const new_user = await db.users.create({
+        await db.user.create({
             data: {
                 userId:user.id,
                 viewPassword:password

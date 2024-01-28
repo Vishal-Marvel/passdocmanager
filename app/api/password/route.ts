@@ -1,41 +1,10 @@
 import { NextResponse } from "next/server";
 
-import crypto from "crypto";
-import bcrypt from "bcrypt";
+import {encrypt, decrypt, compareStrings} from "@/lib/encryption-server"
+
+
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
-
-function generateSaltFromPassword(password: string) {
-    const hash = crypto.createHash('sha256');
-    hash.update(password);
-    return hash.digest('hex').slice(0, 16); // Use first 16 bytes as salt
-}
-
-// An encrypt function
-function encrypt(text: string, password: string) {
-
-    const salt = generateSaltFromPassword(password);
-    const key = crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha512');
-    const cipher = crypto.createCipheriv("aes-256-cbc", key, salt);
-    let encryptedText = cipher.update(text, "utf-8", "hex");
-    encryptedText += cipher.final("hex");
-    return { encryptedText, salt };
-}
-
-function decrypt(password: string, encrptedString: string, salt: string) {
-
-    const key = crypto.pbkdf2Sync(password, salt, 100000, 32, 'sha512');
-
-    const decipher = crypto.createDecipheriv("aes-256-cbc", key, salt);
-    let decryptedText = decipher.update(encrptedString, "hex", "utf-8");
-    decryptedText += decipher.final("utf-8");
-    return decryptedText;
-}
-
-// Function to compare hashed and original strings
-async function compareStrings(originalString: string, hashedString: string) {
-    return await bcrypt.compare(originalString, hashedString);
-}
 
 
 export async function POST(
@@ -82,7 +51,7 @@ export async function PUT(
 ) {
     try {
         const user = await currentProfile();
-        const { id, password, value } = await req.json();
+        const { id, password, value, category } = await req.json();
         if (!user) {
             return new NextResponse("User Not Exists", { status: 400 })
         }
@@ -90,7 +59,9 @@ export async function PUT(
         if (!await compareStrings(password, user.viewPassword)) {
             return new NextResponse("Password Incorrect", { status: 400 })
         }
-
+        if (!password || !value || !category){
+            return new NextResponse("Value, Password or Category is missing", { status: 404 })
+        }
         const record = await db.password.findFirst({
             where: {
                 id
@@ -99,7 +70,20 @@ export async function PUT(
         if (!record || record.userId !== user.id) {
             return new NextResponse("Record Not Found", { status: 404 })
         }
-
+        let categoryRecord = await db.category.findFirst({
+            where:{
+                userId:user.id,
+                name:category
+            }
+        })
+        if (!categoryRecord){
+            categoryRecord = await db.category.create({
+                data:{
+                    name:category,
+                    userId:user.id
+                }
+            })
+        }
 
         const { encryptedText, salt } = encrypt(value, password);
 
@@ -107,7 +91,8 @@ export async function PUT(
             where: { id: record.id },
             data: {
                 value: encryptedText,
-                salt
+                salt,
+                categoryId:categoryRecord.id
             }
         });
         return NextResponse.json("Updated");
@@ -132,6 +117,9 @@ export async function GET() {
         const pairs = await db.password.findMany({
             where: {
                 userId: user.id
+            },
+            include:{
+                category:true
             }
         });
         const objWithoutCertainFields = pairs.map((pair:any) => {

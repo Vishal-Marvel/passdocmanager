@@ -17,20 +17,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import { Label } from "./ui/label";
 import qs from "query-string";
-import { AlertCircle, Edit, Eye, Trash2, X } from "lucide-react";
+import { AlertCircle, Edit, Eye, Loader2, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { decryptReq, encryptReq } from "@/lib/encryption";
+import { Category } from "@prisma/client";
 
 const formSchema = z.object({
     password: z.string().min(8, "Password Is required"),
-    value: z.string()
+    value: z.string(),
+    category: z.string()
 });
 
 
-export const PasswordBox = ({ password }: { password: Password }) => {
+export const PasswordBox = ({ password, onSubmitChange }: { password: Password, onSubmitChange: () => void }) => {
     const [isOpen, setOpen] = useState(false);
     const [value, setValue] = useState("*************");
     const [newValue, setNewValue] = useState("");
@@ -43,17 +45,28 @@ export const PasswordBox = ({ password }: { password: Password }) => {
         resolver: zodResolver(formSchema),
         defaultValues: {
             password: "",
-            value: ""
+            value: "",
+            category: ""
         }
     });
-    const encryptData = (password:string, data:string) => {
+    const encryptData = (password: string, data: string) => {
         setMessage("Encrypting Data")
         return encryptReq(password, data)
     }
     const isLoading = form.formState.isSubmitting;
 
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    const getCategories = async () => {
+        const response = await axios.get("/api/category");
+        setCategories(response.data.categories);
+    }
+    useEffect(() => {
+        getCategories();
+    }, [])
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        
+
         try {
             const encryptPassword = encryptData(values.password, values.password);
             if (isEdit) {
@@ -66,21 +79,23 @@ export const PasswordBox = ({ password }: { password: Password }) => {
                 const data = {
                     id: password.id,
                     password: encryptPassword,
-                    value: encryptReq(values.password, values.value)
+                    value: encryptReq(values.password, values.value),
+                    category: values.category
                 }
                 setMessage("Saving data...")
                 await axios.put("api/password", data);
                 setMessage("")
+                onSubmitChange();
                 form.reset();
                 setIsEdit(false);
                 toast("Value Updated")
-            }else if (isDelete){
-                
+            } else if (isDelete) {
+
                 const url = qs.stringifyUrl({
                     url: "/api/password",
                     query: {
-                        id:password.id,
-                        password:encryptPassword
+                        id: password.id,
+                        password: encryptPassword
                     }
                 });
                 setMessage("Deleting data...")
@@ -105,18 +120,11 @@ export const PasswordBox = ({ password }: { password: Password }) => {
 
         } catch (error) {
             //@ts-ignore
-            toast(<><AlertCircle className="h-4 w-4"/>{error.response.data}</>)
+            toast(<><AlertCircle className="h-4 w-4" />{error.response.data}</>)
             // console.error(error)
             setMessage("")
         }
     };
-
-
-    const handleCancelDelete = ()=>{
-        setIsDelete(false);
-        form.setValue("password" , "");
-        form.setFocus("password");
-    }
 
     const handleMouseDown = () => {
         setValue(newValue)
@@ -147,62 +155,71 @@ export const PasswordBox = ({ password }: { password: Password }) => {
         }
         else
             form.setFocus("password");
-    }, [isEdit])
+        form.setValue("password", "");
+    }, [isEdit, isDelete])
 
 
     return (
         <Dialog open={isOpen} onOpenChange={() => { setValue("*************"); setNewValue(""); setOpen(!isOpen) }}>
-            <DialogTrigger>
-                <div className="min-w-[50px] max-w-[300px] overflow-hidden border-2 border-fuchsia-400 m-2 p-2 pr-3 pl-3 rounded-2xl shadow-xl shadow-fuchsia-200 transform-all duration-200 hover:scale-125 hover:m-6 ease-in cursor-pointer text-center ">
-                    <span className="font-bold ">{password.key}</span>
-                </div>
+            <DialogTrigger className={cn(buttonVariants({ variant: "link" }), "m-0")}>
+                <Eye className="h-5 w-5" />
             </DialogTrigger>
             <DialogContent className="overflow-hidden">
                 <DialogHeader>
                     <DialogTitle>
-                        View Password
+                        {isEdit ? " Edit" : isDelete ? " Delete" : " View"} Record
                     </DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col">
                     <div className={cn("flex flex-col ", isEdit ? "" : "mb-5")}>
                         <div className="flex-col flex gap-2">
                             <Label>Key:</Label>
-                            <span className="w-full  rounded-xl p-2 font-semibold max-w-[450px] overflow-auto">{password.key}</span>
+                            <span className="w-full  rounded-xl p-2 font-semibold max-w-[450px] overflow-auto bg-slate-200 cursor-text">{password.key}</span>
                         </div>
                         {!isEdit && !isDelete &&
                             <div className="flex-col flex gap-2 mt-3">
-                                <Label>Value:</Label>
-                                <div className={cn("w-full rounded-xl p-2 flex justify-between md:items-center md:flex-row flex-col")}>
-                                    <span className={cn(newValue != "" && value != "*************" && "font-semibold")}>
-                                        {value}
+                                <div className="flex gap-2 justify-between">
+                                    <Label>Value:</Label>
+                                    <div className="flex gap-2">
+                                        <Edit className="h-5 w-5 cursor-pointer" onClick={() => setIsEdit(true)} />
+                                        <Trash2 className="h-5 w-5 ml-0 cursor-pointer" onClick={() => setIsDelete(true)} />
 
-                                    </span>
-                                    <div className="flex gap-2 ">
-                                        {newValue != "" &&
-                                            <Eye className="cursor-pointer h-5 w-5 m-2" onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} />
-                                        }
-                                        <Edit className="h-5 w-5 cursor-pointer m-2" onClick={() => setIsEdit(true)} />
-                                        <Trash2 className="h-5 w-5 m-2 ml-0 cursor-pointer" onClick={()=>setIsDelete(true)} />
                                     </div>
+                                </div>
+
+                                <div className={cn("w-full rounded-xl p-2 flex justify-between items-center")}>
+                                        <span className={cn(newValue != "" && value != "*************" && "font-semibold")}>
+                                            {value}
+
+                                        </span>
+                                        {newValue != "" &&
+                                            <Eye className="cursor-pointer h-5 w-5 m-2"
+                                                onMouseDown={handleMouseDown}
+                                                onMouseUp={handleMouseUp}
+                                                onTouchStart={handleMouseDown}
+                                                onTouchEnd={handleMouseUp} />
+                                        }
+
                                 </div>
                                 {newValue != "" &&
                                     <span className="text-xs">Value is accessible for {time}s</span>
                                 }
-
+                                <Label>Category:</Label>
+                                <span className="p-2">{password.category.name}</span>
                             </div>
                         }
                     </div>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                             {isEdit &&
-                                <FormField
-                                    disabled={isLoading || isDelete}
-                                    name={"value"}
-                                    control={form.control}
-                                    render={({ field }) => (
-                                        <FormItem >
-                                            <FormLabel>Value:</FormLabel>
-                                            <div className="flex items-center gap-2">
+                                <>
+                                    <FormField
+                                        disabled={isLoading || isDelete}
+                                        name={"value"}
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem >
+                                                <FormLabel>Value:</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         placeholder="Enter Value"
@@ -211,13 +228,34 @@ export const PasswordBox = ({ password }: { password: Password }) => {
                                                     />
                                                 </FormControl>
 
-                                                <X className="h-6 w-6 cursor-pointer" onClick={() => setIsEdit(false)} />
-                                            </div>
-                                            <FormMessage />
-                                        </FormItem>
 
-                                    )
-                                    } />
+                                                <FormMessage />
+                                            </FormItem>
+
+                                        )
+                                        } />
+                                    <FormField
+                                        disabled={isLoading}
+                                        name={"category"}
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Category:</FormLabel>
+                                                <FormControl>
+                                                    <>
+                                                        <Input defaultValue={password.category.name} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
+                                                        <datalist id="cars" className="w-full bg-transparent" >
+                                                            {categories.map((cat, index) => (
+                                                                <option>{cat.name}</option>
+                                                            ))}
+                                                        </datalist>
+                                                    </>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )
+                                        } />
+                                </>
                             }
                             <FormField
                                 disabled={isLoading}
@@ -225,7 +263,7 @@ export const PasswordBox = ({ password }: { password: Password }) => {
                                 control={form.control}
                                 render={({ field }) => (
                                     <FormItem>
-
+                                        <FormLabel>Password:</FormLabel>
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
@@ -241,10 +279,22 @@ export const PasswordBox = ({ password }: { password: Password }) => {
 
 
                             <div className="flex flex-row gap-4 pt-2">
-                                {isDelete &&
-                                    <Button type="button" variant={"outline"} className="w-1/2" onClick={handleCancelDelete}>Cancel Delete</Button>
+                                {(isDelete || isEdit) &&
+                                    <Button
+                                        type="button"
+                                        variant={"outline"}
+                                        className="w-1/2"
+                                        onClick={() => isDelete ? setIsDelete(false) : setIsEdit(false)}>
+                                        Cancel {isDelete ? "Delete" : "Edit"}
+                                    </Button>
                                 }
-                                <Button className={cn(isDelete ? "w-1/2" : "w-full")} disabled={isLoading} type="submit">Submit To {isEdit ? "Edit" : isDelete ? "Delete" : "View"}</Button>
+                                <Button className={cn(isDelete || isEdit ? "w-1/2" : "w-full")}
+                                    disabled={isLoading}
+                                    type="submit">
+                                    {isLoading && <Loader2 className='h-4 w-4 mr-2 animate-spin' />}
+                                    Submit To
+                                    {isEdit ? " Edit" : isDelete ? " Delete" : " View"}
+                                </Button>
                             </div>
                         </form>
                     </Form>
