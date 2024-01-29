@@ -97,28 +97,28 @@ export const PasswordsTable = () => {
                 ))}
             </div> */}
             {passwords && passwords.length > 0 &&
-            <div className="flex justify-center w-full">
-                <ScrollArea className={"h-[60vh] md:w-[55vw] w-full md:m-4 p-2 "}>
+            // <div className="flex justify-center w-full">
+                <ScrollArea className={"h-[60vh] md:w-[60vw] w-[90vw] md:m-4  mb-0"}>
 
-                    <Table>
+                    <Table className="table-auto">
                         <TableHeader className={"sticky top-0 bg-secondary"}>
                             <TableRow className={"text-indigo-950"}>
-                                <TableHead className={"lg:w-1/7 hidden lg:table-cell text-center"}>S. No.</TableHead>
+                                <TableHead className={"hidden lg:table-cell "}>S. No.</TableHead>
                                 <TableHead className={""}>Key</TableHead>
                                 <TableHead className={""}>Value</TableHead>
-                                <TableHead className={"hidden lg:table-cell"}>Category</TableHead>
-                                <TableHead className={"hidden lg:table-cell"}>Updated At</TableHead>
+                                <TableHead className={"hidden lg:table-cell "}>Category</TableHead>
+                                <TableHead className={"w-1/6 hidden lg:table-cell "}>Updated At</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {visible.map((record, index) => (
                                 <TableRow key={record.id}>
-                                    <TableCell className="hidden lg:table-cell text-center">{index + 1}</TableCell>
-                                    <TableCell className=" ">{record.key}</TableCell>
+                                    <TableCell className="hidden lg:table-cell ">{index + 1}</TableCell>
+                                    <TableCell className="">{record.key}</TableCell>
                                     <TableCell><PasswordBox password={record} onSubmitChange={() => setNewField(!newField)}/></TableCell>
                             
-                                    <TableCell className={"hidden lg:table-cell"}>{record.category.name}</TableCell>
-                                    <TableCell className={"hidden lg:table-cell"}>{record.updatedAt.toLocaleString().slice(0, 10)}</TableCell>
+                                    <TableCell className={"hidden lg:table-cell "}>{record.category.name}</TableCell>
+                                    <TableCell className={"hidden lg:table-cell "}>{record.updatedAt.toLocaleString().slice(0, 10)}</TableCell>
 
                                 </TableRow>
                             ))}
@@ -131,7 +131,7 @@ export const PasswordsTable = () => {
                         </TableFooter>
                     </Table>
                 </ScrollArea>
-                </div>
+                // </div>
             }
         </div>
     )
