@@ -30,19 +30,19 @@ model Category {
   id       String     @id @default(auto()) @map("_id") @db.ObjectId
   name     String     @unique
   Password Password[]
-  user     User      @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String     @db.ObjectId
 }
 
 model Password {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   userId     String    @db.ObjectId
-  user       User    @relation(fields: [userId], references: [id])
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   key        String
   value      String
   salt       String
   categoryId String?   @db.ObjectId // Add a nullable field to store the Category ID
-  category   Category? @relation(fields: [categoryId], references: [id]) // Define the relationship
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull) // Define the relationship
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }
