@@ -184,7 +184,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
 
 
                             <div className="flex flex-col space-y-1.5 pt-2">
-                                <Button disabled={isLoading} type="submit">{isLoading && <Loader2 className='h-4 w-4 animate-spin' />}Submit</Button>
+                                <Button disabled={isLoading} type="submit">{isLoading && <Loader2 className='h-4 w-4 animate-spin mr-2' />}Submit</Button>
                             </div>
                         </form>
                     </Form>
