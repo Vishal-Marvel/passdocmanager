@@ -1,12 +1,11 @@
 import CustomSignOutButton from "@/components/CustomSignOutButton";
-import AddPassword from "@/components/AddPassword";
-import {currentProfile} from "@/lib/current-profile";
 import { PasswordsTable } from "@/components/PasswordsTable";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { initProfile } from "@/lib/init-profile";
 
 export default async function Password() {
-    const user = await currentProfile();
+    const user = await initProfile();
     
     return (
         <div className={"p-2 md:m-2  flex flex-col "}>
