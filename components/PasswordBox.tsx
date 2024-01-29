@@ -188,7 +188,8 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                     </div>
                                 </div>
 
-                                <div className={cn("w-full rounded-xl p-2 flex justify-between items-center")}>
+                                <div className={cn("w-full rounded-xl p-2 flex flex-col")}>
+                                    <div className="flex justify-between">
                                         <span className={cn(newValue != "" && value != "*************" && "font-semibold")}>
                                             {value}
 
@@ -200,13 +201,16 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                                 onTouchStart={handleMouseDown}
                                                 onTouchEnd={handleMouseUp} />
                                         }
+                                    </div>
+                                    {newValue != "" &&
+                                        <span className="text-xs mb-2 font-bold">Value is accessible for {time}s</span>
+                                    }
 
                                 </div>
-                                {newValue != "" &&
-                                    <span className="text-xs">Value is accessible for {time}s</span>
-                                }
-                                <Label>Category:</Label>
-                                <span className="p-2">{password.category.name}</span>
+                                <div className="flex-col flex gap-2 ">
+                                    <Label>Category:</Label>
+                                    <span className="p-2">{password.category.name}</span>
+                                </div>
                             </div>
                         }
                     </div>
@@ -289,7 +293,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                         Cancel {isDelete ? "Delete" : "Edit"}
                                     </Button>
                                 }
-                                <Button className={cn(isDelete || isEdit ? "w-1/2" : "w-full")}
+                                <Button className={cn(isDelete || isEdit ? "w-1/2" : "w-full", "transition-all duration-200 ease-in")}
                                     disabled={isLoading}
                                     type="submit">
                                     {isLoading && <Loader2 className='h-4 w-4 mr-2 animate-spin' />}
