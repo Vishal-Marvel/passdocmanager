@@ -46,7 +46,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
         defaultValues: {
             password: "",
             value: "",
-            category: ""
+            category: password.category.name
         }
     });
     const encryptData = (password: string, data: string) => {
@@ -244,7 +244,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                                 <FormLabel>Category:</FormLabel>
                                                 <FormControl>
                                                     <>
-                                                        <Input defaultValue={password.category.name} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
+                                                        <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
                                                         <datalist id="cars" className="w-full bg-transparent" >
                                                             {categories.map((cat, index) => (
                                                                 <option>{cat.name}</option>
