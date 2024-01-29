@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Password } from "./PasswordsTable"
 import {
     Dialog,
@@ -10,6 +10,13 @@ import {
     DialogTrigger
 
 } from "./ui/dialog"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -40,6 +47,9 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
     const [isEdit, setIsEdit] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const [message, setMessage] = useState("");
+    const buttonRef = useRef(null);
+    const [isHidden, setIsHidden] = useState(true);
+
 
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -63,7 +73,36 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
     }
     useEffect(() => {
         getCategories();
-    }, [])
+    }, []);
+
+
+    // useEffect(() => {
+    //     const handleResize = () => {
+    //         if (buttonRef.current) {
+    //             const { width } = buttonRef.current.getBoundingClientRect();
+    //             console.log(width);
+    //             if (width > 200)
+    //                 setIsHidden(true);
+    //         }
+    //     };
+
+    //     handleResize(); // Call once to get initial width
+
+    //     window.addEventListener('resize', handleResize); // Listen for resize events
+
+    //     return () => {
+    //         window.removeEventListener('resize', handleResize); // Remove event listener on component unmount
+    //     };
+    // }, );
+
+    const handleResize = (event: any) => {
+        const element = event.target;
+        console.log(parseInt(getComputedStyle(element).width), event.propertyName === 'width')
+        if (parseInt(getComputedStyle(element).width)) {
+            setIsHidden(true);
+        }
+    };
+
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
 
@@ -101,7 +140,8 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                 });
                 setMessage("Deleting data...")
                 await axios.delete(url);
-                setMessage("")
+                setMessage("");
+                onSubmitChange();
                 form.reset();
                 setOpen(false);
                 setNewValue("");
@@ -150,6 +190,8 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
         }
     }, [newValue]);
     useEffect(() => {
+        if (isEdit || isDelete)
+            setIsHidden(false);
         if (isEdit) {
             form.setFocus("value");
             setNewValue("");
@@ -159,13 +201,25 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
         form.setValue("password", "");
     }, [isEdit, isDelete])
 
+    const handleOnClose = () => {
+        setValue("*************");
+        setNewValue("");
+        setOpen(!isOpen);
+        setIsEdit(false);
+        setIsDelete(false);
+        setIsHidden(true);
+        onSubmitChange();
+    }
+
+
+
 
     return (
-        <Dialog open={isOpen} onOpenChange={() => { setValue("*************"); setNewValue(""); setOpen(!isOpen) }}>
+        <Dialog open={isOpen} onOpenChange={handleOnClose}>
             <DialogTrigger className={cn(buttonVariants({ variant: "link" }), "m-0")}>
                 <Eye className="h-5 w-5" />
             </DialogTrigger>
-            <DialogContent className="overflow-hidden">
+            <DialogContent className="overflow-hidden h-fit transition-height duration-300 ease-in">
                 <DialogHeader>
                     <DialogTitle>
                         {isEdit ? " Edit" : isDelete ? " Delete" : " View"} Record
@@ -178,14 +232,10 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                             <span className="w-full  rounded-xl p-2 font-semibold max-w-[450px] overflow-auto bg-slate-200 cursor-text">{password.key}</span>
                         </div>
                         {!isEdit && !isDelete &&
-                            <div className="flex-col flex gap-2 mt-3">
+                            <div className="flex-col flex gap-2 mt-4">
                                 <div className="flex gap-2 justify-between">
                                     <Label>Value:</Label>
-                                    <div className="flex gap-2">
-                                        <Edit className="h-5 w-5 cursor-pointer" onClick={() => setIsEdit(true)} />
-                                        <Trash2 className="h-5 w-5 ml-0 cursor-pointer" onClick={() => setIsDelete(true)} />
 
-                                    </div>
                                 </div>
 
                                 <div className={cn("w-full rounded-xl p-2 flex flex-col")}>
@@ -215,7 +265,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                         }
                     </div>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-0">
                             {isEdit &&
                                 <>
                                     <FormField
@@ -251,7 +301,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                                         <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
                                                         <datalist id="cars" className="w-full bg-transparent" >
                                                             {categories.map((cat, index) => (
-                                                                <option>{cat.name}</option>
+                                                                <option key={index}>{cat.name}</option>
                                                             ))}
                                                         </datalist>
                                                     </>
@@ -281,26 +331,54 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                     </FormItem>
                                 )
                                 } />
+                            {!isEdit && !isDelete &&
+                                <div className="flex gap-10 justify-center">
+                                    <TooltipProvider>
+                                        <Tooltip >
+                                            <TooltipTrigger>
+                                                <Edit className="h-5 w-5 cursor-pointer" onClick={() => setIsEdit(true)} />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Edit Record</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger><Trash2 className="h-5 w-5 ml-0 cursor-pointer" onClick={() => setIsDelete(true)} /></TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Delete Record</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
 
+                                </div>
+                            }
 
-                            <div className="flex flex-row gap-4 pt-2">
+                            <div className="flex flex-row  relative ">
                                 {(isDelete || isEdit) &&
                                     <Button
                                         type="button"
                                         variant={"outline"}
-                                        className="w-1/2"
+                                        ref={buttonRef}
+                                        className={cn("absolute left-0 transition-all duration-200 w-[45%]")}
                                         onClick={() => isDelete ? setIsDelete(false) : setIsEdit(false)}>
-                                        Cancel {isDelete ? "Delete" : "Edit"}
+
+
+                                        Cancel {(isDelete ? "Delete" : "Edit")}
                                     </Button>
                                 }
-                                <Button className={cn(isDelete || isEdit ? "w-1/2" : "w-full", "transition-all duration-200 ease-in")}
+                                <Button className={cn((isDelete || isEdit) ? "w-1/2 left-1/2" : "w-full left-0", "mb-4 absolute transition-all duration-300")}
                                     disabled={isLoading}
+                                    // style={{ minWidth: isDelete || isEdit ? "50%" : "100%" }}
                                     type="submit">
+
                                     {isLoading && <Loader2 className='h-4 w-4 mr-2 animate-spin' />}
                                     Submit To
                                     {isEdit ? " Edit" : isDelete ? " Delete" : " View"}
                                 </Button>
                             </div>
+                            <div className="flex-1"></div>
                         </form>
                     </Form>
                 </div>
