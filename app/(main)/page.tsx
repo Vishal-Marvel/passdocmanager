@@ -27,13 +27,13 @@ export default async function Home() {
           <Link className={"h-[150px] w-[150px] border-8 border-blue-300  transform-all duration-200 hover:-translate-y-4 rounded-2xl m-2 p-2 shadow-xl grid place-items-center"}
                   href={"/password"}>
                   <KeyRound className={"h-20 w-20 p-4"} color={"#93c5fd"} />
-                  <span className="text-blue-500 text-sm ">Password</span>
+                  <span className="font-semibold text-sm ">Password</span>
             </Link>
 
           <Link className={"h-[150px] w-[150px] border-8 border-blue-300  transform-all duration-200 hover:-translate-y-4 rounded-2xl m-2 p-2 shadow-xl grid place-items-center"}
             href={"/document"}>
             <FileCheck2 className={"h-20 w-20 p-4"} color={"#93c5fd"} />
-            <span className="text-blue-500 text-sm">Document</span>
+            <span className="font-semibold text-sm">Document</span>
 
           </Link>
 
