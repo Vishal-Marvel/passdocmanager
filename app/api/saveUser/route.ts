@@ -3,6 +3,7 @@ import {NextResponse} from "next/server";
 import {currentUser} from "@clerk/nextjs";
 import {db} from "@/lib/db";
 import { hashString } from "@/lib/encryption-server";
+import { redirect } from "next/navigation";
 
 
 
@@ -23,8 +24,10 @@ export async function POST(
             }
         });
         if (existingProfile){
-            return new NextResponse("User Already Exists", {status: 400})
+            return new NextResponse("Password Already Set", {status: 400})
+            redirect("/");
         }
+        // console.log(viewPassword);
         const password = await hashString(viewPassword);
 
         await db.user.create({
