@@ -66,8 +66,9 @@ export default function SignUpComponent() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-
-            await axios.post("/api/saveUser", { viewPassword: encryptReq(values.password, values.password) });
+            const encryptData = encryptReq(values.password, values.confirmPassword);
+            // console.log(encryptData);
+            await axios.post("/api/saveUser", { viewPassword: encryptData });
             router.push('/');
             form.reset()
             toast("Password Saved")
