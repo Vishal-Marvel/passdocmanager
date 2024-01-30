@@ -31,6 +31,7 @@ import { AlertCircle, Edit, Eye, Loader2, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { decryptReq, encryptReq } from "@/lib/encryption";
 import { Category } from "@prisma/client";
+import { SearchableSelect } from "./SearchableSelect";
 
 const formSchema = z.object({
     password: z.string().min(8, "Password Is required"),
@@ -114,6 +115,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                     form.setFocus("value");
                     return
                 }
+                // console.log(values.category);
 
                 const data = {
                     id: password.id,
@@ -297,14 +299,15 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                             <FormItem>
                                                 <FormLabel>Category:</FormLabel>
                                                 <FormControl>
-                                                    <>
-                                                        <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
+                                                    {/* <> */}
+                                                    <SearchableSelect defaultValue={field.value} inputOptions={categories.map(category => category.name)} onSelect={field.onChange}/>
+                                                        {/* <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
                                                         <datalist id="cars" className="w-full bg-transparent" >
                                                             {categories.map((cat, index) => (
                                                                 <option key={index}>{cat.name}</option>
                                                             ))}
-                                                        </datalist>
-                                                    </>
+                                                        </datalist> */}
+                                                    {/* </> */}
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -322,7 +325,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                placeholder={isEdit ? "Enter Password to Edit the value" : isDelete ? "Enter Password to Delete the record" : "Enter Password to view the value"}
+                                                placeholder={"Enter Password set after Login to" + isEdit ? " Edit " : isDelete ? " Delete " : " view " + "the record"}
                                                 {...field}
                                                 type={"password"}
                                             />

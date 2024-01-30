@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { encryptReq } from "@/lib/encryption";
 import { Category } from "@prisma/client";
+import { SearchableSelect } from "./SearchableSelect";
 
 const formSchema = z.object({
 
@@ -111,7 +112,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                                         <FormLabel>Key:</FormLabel>
                                         <FormControl>
                                             <Input
-
+                                                autoFocus
                                                 disabled={isLoading}
                                                 placeholder="Enter Key"
                                                 {...field}
@@ -149,14 +150,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                                     <FormItem>
                                         <FormLabel>Category:</FormLabel>
                                         <FormControl>
-                                            <>
-                                            <Input type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
-                                            <datalist id="cars" className="w-full bg-transparent" >
-                                                {categories.map((cat, index) => (
-                                                    <option>{cat.name}</option>
-                                                ))}
-                                            </datalist>
-                                            </>
+                                            <SearchableSelect inputOptions={categories.map(cat => cat.name)} onSelect={field.onChange} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -172,7 +166,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                placeholder="Enter Password"
+                                                placeholder="Enter Password set after Login"
                                                 {...field}
                                                 type={"password"}
                                             />
