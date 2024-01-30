@@ -28,7 +28,7 @@ model Docuement {
 
 model Category {
   id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  name     String     @unique
+  name     String     
   Password Password[]
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId  String     @db.ObjectId
