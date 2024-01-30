@@ -31,13 +31,17 @@ export interface Password {
 
 function isMobileView() {
     // Get the width of the viewport
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-
-    // Define the threshold width for mobile view
-    const mobileWidthThreshold = 1030; // Adjust this value as needed for your design
-
-    // Check if the viewport width is less than the mobile threshold
-    return viewportWidth < mobileWidthThreshold;
+    const  width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    // console.log(width)
+    if (width>768 && width<1030){
+        // console.log(0)
+        return 2;
+    }else if (width<768){
+        // console.log(4)
+        return 0
+    }else{
+        return 4
+    }
 }
 
 export const PasswordsTable = () => {
@@ -46,7 +50,7 @@ export const PasswordsTable = () => {
     const [newField, setNewField] = useState(false);
     const [search, setSearch] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-    const [span, setSpan] = useState(isMobileView() ? 0 :4);
+    const [span, setSpan] = useState(isMobileView());
 
     const getPasswords = async () => {
         // console.log("loaing");
@@ -65,14 +69,9 @@ export const PasswordsTable = () => {
 
     useEffect(()=>{
         const handleResize = () =>{
-            const  width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-            if (width<1030){
-                // console.log(0)
-                setSpan(0);
-            }else{
-                // console.log(4)
-                setSpan(4)
-            }
+            // const  width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    // console.log(width)
+            setSpan(isMobileView())
 
         }
         window.addEventListener("resize", handleResize);
