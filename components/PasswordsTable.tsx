@@ -49,7 +49,7 @@ export const PasswordsTable = () => {
     const [span, setSpan] = useState(isMobileView() ? 0 :4);
 
     const getPasswords = async () => {
-        console.log("loaing");
+        // console.log("loaing");
         const password_data = await axios.get("/api/password")
             .then(r => r.data)
             .catch(e => console.error(e))
