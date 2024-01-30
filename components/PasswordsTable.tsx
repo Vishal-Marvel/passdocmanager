@@ -114,7 +114,7 @@ export const PasswordsTable = () => {
                     <Table className="table-auto">
                         <TableHeader className={"sticky top-0 bg-secondary"}>
                             <TableRow className={"text-indigo-950"}>
-                                <TableHead className={"hidden lg:table-cell "}>S. No.</TableHead>
+                                <TableHead className={"hidden md:table-cell "}>S. No.</TableHead>
                                 <TableHead className={""}>Key</TableHead>
                                 <TableHead className={"text-center"}>Value</TableHead>
                                 <TableHead className={"hidden lg:table-cell "}>Category</TableHead>
@@ -124,7 +124,7 @@ export const PasswordsTable = () => {
                         <TableBody>
                             {visible.map((record, index) => (
                                 <TableRow key={record.id}>
-                                    <TableCell className="hidden lg:table-cell ">{index + 1}</TableCell>
+                                    <TableCell className="hidden md:table-cell ">{index + 1}</TableCell>
                                     <TableCell className="">{record.key}</TableCell>
                                     <TableCell className="text-center"><PasswordBox password={record} onSubmitChange={() => setNewField(!newField)}/></TableCell>
                             
