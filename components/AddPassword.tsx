@@ -67,6 +67,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
             setMessage("")
             toast("Record Added");
             onSubmitChange();
+            getCategories();
             setOpen(false);
             form.reset()
         } catch (error: any) {
