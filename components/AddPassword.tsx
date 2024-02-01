@@ -9,21 +9,22 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {Button, buttonVariants} from "@/components/ui/button";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
-import { FormEvent, useEffect, useState } from "react";
-import { PlusCircle, AlertCircle, Loader2 } from "lucide-react";
+import {FormEvent, useEffect, useState} from "react";
+import {PlusCircle, AlertCircle, Loader2} from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { encryptReq } from "@/lib/encryption";
-import { Category } from "@prisma/client";
-import { SearchableSelect } from "./SearchableSelect";
+import {cn} from "@/lib/utils";
+import {toast} from "sonner";
+import {encryptReq} from "@/lib/encryption";
+import {Category} from "@prisma/client";
+import {SearchableSelect} from "./SearchableSelect";
+import {PasswordInput} from "@/components/PasswordInput";
 
 const formSchema = z.object({
 
@@ -33,9 +34,10 @@ const formSchema = z.object({
     category: z.string(),
 });
 
-const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
+const AddPassword = ({onSubmitChange}: { onSubmitChange: () => void }) => {
     const [isOpen, setOpen] = useState(false);
     const [message, setMessage] = useState("");
+    const [focusItem, setFocusItem] = useState(false);
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -50,12 +52,12 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
         setMessage("Encrypting Data...")
         const encryptedValue = await encryptReq(password, value);
         const encryptedPassword = await encryptReq(password, password);
-        return { encryptedValue, encryptedPassword };
+        return {encryptedValue, encryptedPassword};
     }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const { encryptedValue, encryptedPassword } = await handlePreSubmit(values.password, values.value)
+            const {encryptedValue, encryptedPassword} = await handlePreSubmit(values.password, values.value)
             const data = {
                 key: values.key,
                 value: encryptedValue,
@@ -75,7 +77,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                 if (error.response.data === "Password Incorrect") {
                     form.setFocus("password");
                 }
-                toast(<><AlertCircle className="h-4 w-4" />{error.response.data}</>)
+                toast(<><AlertCircle className="h-4 w-4"/>{error.response.data}</>)
             }
             setMessage("")
             // console.error(error)
@@ -90,12 +92,28 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
     useEffect(() => {
         getCategories();
     }, [])
+    const handleDialogClose = () => {
+        setOpen(!isOpen);
+        form.reset();
+    }
+    const handleFocusChange = (event) => {
+        // console.log(event.target.id)
+        if (event.target.id.includes("react-select")) {
+            setFocusItem(true);
+        } else {
+            if (focusItem) {
+                form.setFocus("password");
+
+            }
+            setFocusItem(false);
+        }
+    }
     return (
-        <Dialog open={isOpen} onOpenChange={() => setOpen(!isOpen)}>
-            <DialogTrigger className={cn(buttonVariants({ variant: "default" }), "gap-2 flex w-full md:w-1/3")}>
-                <><PlusCircle className="min-h-3 min-w-3"/> <span >Securely Add One</span></>
+        <Dialog open={isOpen} onOpenChange={handleDialogClose}>
+            <DialogTrigger className={cn(buttonVariants({variant: "default"}), "gap-2 flex w-full md:w-1/3")}>
+                <><PlusCircle className="min-h-3 min-w-3"/> <span>Securely Add One</span></>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent onFocusCapture={handleFocusChange}>
                 <DialogHeader>
                     <DialogTitle>
                         Add A Password
@@ -108,7 +126,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                                 disabled={isLoading}
                                 name={"key"}
                                 control={form.control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Key:</FormLabel>
                                         <FormControl>
@@ -117,69 +135,70 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                                                 disabled={isLoading}
                                                 placeholder="Enter Key"
                                                 {...field}
-                                            // type={"password"}
+                                                // type={"password"}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )
-                                } />
+                                }/>
                             <FormField
                                 disabled={isLoading}
                                 name={"value"}
                                 control={form.control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Value:</FormLabel>
                                         <FormControl>
-                                            <Input
+                                            <PasswordInput
                                                 disabled={isLoading}
                                                 placeholder="Enter Value"
                                                 {...field}
-                                                type={"password"}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )
-                                } />
+                                }/>
                             <FormField
                                 disabled={isLoading}
                                 name={"category"}
                                 control={form.control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Category:</FormLabel>
                                         <FormControl>
-                                            <SearchableSelect inputOptions={categories.map(cat => cat.name)} onSelect={field.onChange} />
+                                            <SearchableSelect inputOptions={categories.map(cat => cat.name)}
+                                                              onSelect={field.onChange}
+                                                              index={0}/>
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )
-                                } />
+                                }/>
                             <FormField
                                 disabled={isLoading}
                                 name={"password"}
                                 control={form.control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem>
-                                        <FormLabel>Password:</FormLabel>
+                                        <FormLabel>Password :</FormLabel>
                                         <FormControl>
-                                            <Input
+                                            <PasswordInput
                                                 disabled={isLoading}
                                                 placeholder="Enter Password set after Login"
                                                 {...field}
-                                                type={"password"}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )
-                                } />
+                                }/>
 
 
                             <div className="flex flex-col space-y-1.5 pt-2">
-                                <Button disabled={isLoading} type="submit">{isLoading && <Loader2 className='h-4 w-4 animate-spin mr-2' />}Submit</Button>
+                                <Button disabled={isLoading} type="submit">{isLoading &&
+                                    <Loader2 className='h-4 w-4 animate-spin mr-2'/>}Submit</Button>
                             </div>
                         </form>
                     </Form>
