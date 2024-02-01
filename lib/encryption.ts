@@ -1,9 +1,9 @@
-
+"use server"
 import crypto from "crypto";
 
 const salt: string = process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
 
-export function encryptReq(password: string, data: string) {
+export async function encryptReq(password: string, data: string) {
     try {
         const key = crypto.pbkdf2Sync(password, salt, 20000, 32, 'sha512');
 
@@ -16,7 +16,7 @@ export function encryptReq(password: string, data: string) {
         console.log(e)
     }
 }
-export function decryptReq(password: string, encrptedString: string) {
+export async function decryptReq(password: string, encrptedString: string) {
     const key = crypto.pbkdf2Sync(password, salt, 20000, 32, 'sha512');
 
     const decipher = crypto.createDecipheriv("aes-256-cbc", key, salt.substring(0,16));

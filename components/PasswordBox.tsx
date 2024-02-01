@@ -40,7 +40,13 @@ const formSchema = z.object({
 });
 
 
-export const PasswordBox = ({ password, onSubmitChange }: { password: Password, onSubmitChange: () => void }) => {
+interface Props {
+    categories: Category[]
+    password: Password
+    onSubmitChange: () => void
+}
+
+export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => {
     const [isOpen, setOpen] = useState(false);
     const [value, setValue] = useState("*************");
     const [newValue, setNewValue] = useState("");
@@ -48,8 +54,8 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
     const [isEdit, setIsEdit] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
     const [message, setMessage] = useState("");
+
     const buttonRef = useRef(null);
-    const [isHidden, setIsHidden] = useState(true);
 
 
     const form = useForm({
@@ -66,49 +72,10 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
     }
     const isLoading = form.formState.isSubmitting;
 
-    const [categories, setCategories] = useState<Category[]>([]);
-
-    const getCategories = async () => {
-        const response = await axios.get("/api/category");
-        setCategories(response.data.categories);
-    }
-    useEffect(() => {
-        getCategories();
-    }, []);
-
-
-    // useEffect(() => {
-    //     const handleResize = () => {
-    //         if (buttonRef.current) {
-    //             const { width } = buttonRef.current.getBoundingClientRect();
-    //             console.log(width);
-    //             if (width > 200)
-    //                 setIsHidden(true);
-    //         }
-    //     };
-
-    //     handleResize(); // Call once to get initial width
-
-    //     window.addEventListener('resize', handleResize); // Listen for resize events
-
-    //     return () => {
-    //         window.removeEventListener('resize', handleResize); // Remove event listener on component unmount
-    //     };
-    // }, );
-
-    const handleResize = (event: any) => {
-        const element = event.target;
-        console.log(parseInt(getComputedStyle(element).width), event.propertyName === 'width')
-        if (parseInt(getComputedStyle(element).width)) {
-            setIsHidden(true);
-        }
-    };
-
-
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
 
         try {
-            const encryptPassword = encryptData(values.password, values.password);
+            const encryptPassword = await encryptData(values.password, values.password);
             if (isEdit) {
                 if (values.value.length < 1) {
                     form.setError("value", { message: "Value is Required" });
@@ -127,7 +94,6 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                 await axios.put("api/password", data);
                 setMessage("")
                 onSubmitChange();
-                getCategories();
                 form.reset();
                 setIsEdit(false);
                 toast("Value Updated")
@@ -157,7 +123,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                 setMessage("Retriving data...")
                 const response = (await axios.post("/api/password", data)).data;
                 setMessage("")
-                setNewValue(decryptReq(values.password, response.value));
+                setNewValue(await decryptReq(values.password, response.value));
                 form.reset();
             }
 
@@ -193,13 +159,12 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
     }, [newValue]);
     useEffect(() => {
         if (isEdit || isDelete)
-            setIsHidden(false);
-        if (isEdit) {
-            form.setFocus("value");
-            setNewValue("");
-        }
-        else
-            form.setFocus("password");
+            if (isEdit) {
+                form.setFocus("value");
+                setNewValue("");
+            }
+            else
+                form.setFocus("password");
         form.setValue("password", "");
     }, [isEdit, isDelete])
 
@@ -209,7 +174,6 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
         setOpen(!isOpen);
         setIsEdit(false);
         setIsDelete(false);
-        setIsHidden(true);
         onSubmitChange();
     }
 
@@ -300,8 +264,8 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                                 <FormLabel>Category:</FormLabel>
                                                 <FormControl>
                                                     {/* <> */}
-                                                    <SearchableSelect defaultValue={field.value} inputOptions={categories.map(category => category.name)} onSelect={field.onChange}/>
-                                                        {/* <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
+                                                    <SearchableSelect defaultValue={field.value} inputOptions={categories.map(category => category.name)} onSelect={field.onChange} />
+                                                    {/* <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
                                                         <datalist id="cars" className="w-full bg-transparent" >
                                                             {categories.map((cat, index) => (
                                                                 <option key={index}>{cat.name}</option>
@@ -325,7 +289,7 @@ export const PasswordBox = ({ password, onSubmitChange }: { password: Password, 
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                placeholder={"Enter Password set after Login to" + isEdit ? " Edit " : isDelete ? " Delete " : " view " + "the record"}
+                                                placeholder={("Enter Password set after Login to" + (isEdit ? " Edit " : isDelete ? " Delete " : " view ") + "the record")}
                                                 {...field}
                                                 type={"password"}
                                             />

@@ -2,6 +2,7 @@ import {auth, redirectToSignIn} from "@clerk/nextjs";
 
 
 import {db} from "@/lib/db";
+import { User } from "@prisma/client";
 
 export const currentProfile = async () => {
     const {userId} =  auth();
@@ -10,7 +11,7 @@ export const currentProfile = async () => {
         return redirectToSignIn();
     }
 
-    const profile = await db.user.findUnique({
+    const profile:User = await db.user.findUnique({
         where: {
             userId
         }

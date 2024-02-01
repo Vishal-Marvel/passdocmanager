@@ -48,8 +48,8 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
     const isLoading = form.formState.isSubmitting;
     const handlePreSubmit = async (password: string, value: string) => {
         setMessage("Encrypting Data...")
-        const encryptedValue = encryptReq(password, value);
-        const encryptedPassword = encryptReq(password, password);
+        const encryptedValue = await encryptReq(password, value);
+        const encryptedPassword = await encryptReq(password, password);
         return { encryptedValue, encryptedPassword };
     }
 
@@ -93,7 +93,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
     return (
         <Dialog open={isOpen} onOpenChange={() => setOpen(!isOpen)}>
             <DialogTrigger className={cn(buttonVariants({ variant: "default" }), "gap-2 flex w-full md:w-1/3")}>
-                <><PlusCircle className="h-5 w-5"/> <span>Securely Add One</span></>
+                <><PlusCircle className="min-h-3 min-w-3"/> <span >Securely Add One</span></>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
