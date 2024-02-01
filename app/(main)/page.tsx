@@ -11,8 +11,8 @@ export default async function Home() {
   return (
     <div className={"m-2 p-2 flex flex-col "}>
       <div className={"flex w-full justify-end gap-4 sticky"}>
-        <Link href={"/setPasswrod"} className={buttonVariants({ variant: "outline" })}> Reset Password </Link>
-        <CustomSignOutButton />
+        <Link href={"/setPassword"} className={buttonVariants({variant: "outline"})}> Reset Password </Link>
+        <CustomSignOutButton/>
       </div>
       <div className="h-[60vh] flex flex-col justify-center">
         <div className={"flex flex-col h-1/2 items-center text-center"}>

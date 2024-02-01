@@ -1,6 +1,6 @@
 "use client"
-import { useEffect, useRef, useState } from "react";
-import { Password } from "./PasswordsTable"
+import {useEffect, useRef, useState} from "react";
+import {Password} from "./PasswordsTable"
 import {
     Dialog,
     DialogContent,
@@ -17,21 +17,21 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 
-import { toast } from "sonner"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {toast} from "sonner"
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
-import { Button, buttonVariants } from "./ui/button";
-import { Label } from "./ui/label";
+import {Button, buttonVariants} from "./ui/button";
+import {Label} from "./ui/label";
 import qs from "query-string";
-import { AlertCircle, Edit, Eye, Loader2, Trash2, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { decryptReq, encryptReq } from "@/lib/encryption";
-import { Category } from "@prisma/client";
-import { SearchableSelect } from "./SearchableSelect";
+import {AlertCircle, Edit, Eye, Loader2, Trash2, X} from "lucide-react";
+import {cn} from "@/lib/utils";
+import {decryptReq, encryptReq} from "@/lib/encryption";
+import {Category} from "@prisma/client";
+import {SearchableSelect} from "./SearchableSelect";
 
 const formSchema = z.object({
     password: z.string().min(8, "Password Is required"),
@@ -46,7 +46,7 @@ interface Props {
     onSubmitChange: () => void
 }
 
-export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => {
+export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
     const [isOpen, setOpen] = useState(false);
     const [value, setValue] = useState("*************");
     const [newValue, setNewValue] = useState("");
@@ -78,7 +78,7 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
             const encryptPassword = await encryptData(values.password, values.password);
             if (isEdit) {
                 if (values.value.length < 1) {
-                    form.setError("value", { message: "Value is Required" });
+                    form.setError("value", {message: "Value is Required"});
                     form.setFocus("value");
                     return
                 }
@@ -129,7 +129,7 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
 
         } catch (error) {
             //@ts-ignore
-            toast(<><AlertCircle className="h-4 w-4" />{error.response.data}</>)
+            toast(<><AlertCircle className="h-4 w-4"/>{error.response.data}</>)
             // console.error(error)
             setMessage("")
         }
@@ -146,12 +146,17 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
         form.setFocus("password")
     }, [])
     useEffect(() => {
-        const timer = setInterval(() => { setNewValue(""); setValue("*************") }, 10000);
+        const timer = setInterval(() => {
+            setNewValue("");
+            setValue("*************")
+        }, 10000);
         return () => clearInterval(timer);
     }, [newValue])
     useEffect(() => {
         if (newValue != "") {
-            const timer = setInterval(() => { setTime(prev => prev - 1) }, 1000);
+            const timer = setInterval(() => {
+                setTime(prev => prev - 1)
+            }, 1000);
             return () => clearInterval(timer);
         } else {
             setTime(10);
@@ -162,10 +167,9 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
             if (isEdit) {
                 form.setFocus("value");
                 setNewValue("");
-            }
-            else
+            } else
                 form.setFocus("password");
-        form.setValue("password", "");
+        form.resetField("password");
     }, [isEdit, isDelete])
 
     const handleOnClose = () => {
@@ -178,12 +182,10 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
     }
 
 
-
-
     return (
         <Dialog open={isOpen} onOpenChange={handleOnClose}>
-            <DialogTrigger className={cn(buttonVariants({ variant: "link" }), "m-0")}>
-                <Eye className="h-5 w-5" />
+            <DialogTrigger className={cn(buttonVariants({variant: "link"}), "m-0")}>
+                <Eye className="h-5 w-5"/>
             </DialogTrigger>
             <DialogContent className="overflow-hidden h-fit transition-height duration-300 ease-in">
                 <DialogHeader>
@@ -195,7 +197,8 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
                     <div className={cn("flex flex-col ", isEdit ? "" : "mb-5")}>
                         <div className="flex-col flex gap-2">
                             <Label>Key:</Label>
-                            <span className="w-full  rounded-xl p-2 font-semibold max-w-[450px] overflow-auto bg-slate-200 cursor-text">{password.key}</span>
+                            <span
+                                className="w-full  rounded-xl p-2 font-semibold max-w-[450px] overflow-auto bg-slate-200 cursor-text">{password.key}</span>
                         </div>
                         {!isEdit && !isDelete &&
                             <div className="flex-col flex gap-2 mt-4">
@@ -206,16 +209,17 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
 
                                 <div className={cn("w-full rounded-xl p-2 flex flex-col")}>
                                     <div className="flex justify-between">
-                                        <span className={cn(newValue != "" && value != "*************" && "font-semibold")}>
+                                        <span
+                                            className={cn(newValue != "" && value != "*************" && "font-semibold")}>
                                             {value}
 
                                         </span>
                                         {newValue != "" &&
                                             <Eye className="cursor-pointer h-5 w-5 m-2"
-                                                onMouseDown={handleMouseDown}
-                                                onMouseUp={handleMouseUp}
-                                                onTouchStart={handleMouseDown}
-                                                onTouchEnd={handleMouseUp} />
+                                                 onMouseDown={handleMouseDown}
+                                                 onMouseUp={handleMouseUp}
+                                                 onTouchStart={handleMouseDown}
+                                                 onTouchEnd={handleMouseUp}/>
                                         }
                                     </div>
                                     {newValue != "" &&
@@ -238,8 +242,8 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
                                         disabled={isLoading || isDelete}
                                         name={"value"}
                                         control={form.control}
-                                        render={({ field }) => (
-                                            <FormItem >
+                                        render={({field}) => (
+                                            <FormItem>
                                                 <FormLabel>Value:</FormLabel>
                                                 <FormControl>
                                                     <Input
@@ -250,40 +254,35 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
                                                 </FormControl>
 
 
-                                                <FormMessage />
+                                                <FormMessage/>
                                             </FormItem>
 
                                         )
-                                        } />
+                                        }/>
                                     <FormField
                                         disabled={isLoading}
                                         name={"category"}
                                         control={form.control}
-                                        render={({ field }) => (
+                                        render={({field}) => (
                                             <FormItem>
                                                 <FormLabel>Category:</FormLabel>
                                                 <FormControl>
-                                                    {/* <> */}
-                                                    <SearchableSelect defaultValue={field.value} inputOptions={categories.map(category => category.name)} onSelect={field.onChange} />
-                                                    {/* <Input defaultValue={field.value} type="text" list="cars" placeholder="Category" onChange={field.onChange} disabled={isLoading} />
-                                                        <datalist id="cars" className="w-full bg-transparent" >
-                                                            {categories.map((cat, index) => (
-                                                                <option key={index}>{cat.name}</option>
-                                                            ))}
-                                                        </datalist> */}
-                                                    {/* </> */}
+                                                    <SearchableSelect defaultValue={field.value}
+                                                                      inputOptions={categories.map(category => category.name)}
+                                                                      onSelect={field.onChange}/>
+
                                                 </FormControl>
-                                                <FormMessage />
+                                                <FormMessage/>
                                             </FormItem>
                                         )
-                                        } />
+                                        }/>
                                 </>
                             }
                             <FormField
                                 disabled={isLoading}
                                 name={"password"}
                                 control={form.control}
-                                render={({ field }) => (
+                                render={({field}) => (
                                     <FormItem>
                                         <FormLabel>Password:</FormLabel>
                                         <FormControl>
@@ -294,16 +293,17 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
                                                 type={"password"}
                                             />
                                         </FormControl>
-                                        <FormMessage />
+                                        <FormMessage/>
                                     </FormItem>
                                 )
-                                } />
+                                }/>
                             {!isEdit && !isDelete &&
                                 <div className="flex gap-10 justify-center">
                                     <TooltipProvider>
-                                        <Tooltip >
+                                        <Tooltip>
                                             <TooltipTrigger>
-                                                <Edit className="h-5 w-5 cursor-pointer" onClick={() => setIsEdit(true)} />
+                                                <Edit className="h-5 w-5 cursor-pointer"
+                                                      onClick={() => setIsEdit(true)}/>
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p>Edit Record</p>
@@ -312,7 +312,8 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
                                     </TooltipProvider>
                                     <TooltipProvider>
                                         <Tooltip>
-                                            <TooltipTrigger><Trash2 className="h-5 w-5 ml-0 cursor-pointer" onClick={() => setIsDelete(true)} /></TooltipTrigger>
+                                            <TooltipTrigger><Trash2 className="h-5 w-5 ml-0 cursor-pointer"
+                                                                    onClick={() => setIsDelete(true)}/></TooltipTrigger>
                                             <TooltipContent>
                                                 <p>Delete Record</p>
                                             </TooltipContent>
@@ -335,12 +336,13 @@ export const PasswordBox = ({ categories, password, onSubmitChange }: Props) => 
                                         Cancel {(isDelete ? "Delete" : "Edit")}
                                     </Button>
                                 }
-                                <Button className={cn((isDelete || isEdit) ? "w-1/2 left-1/2" : "w-full left-0", "mb-4 absolute transition-all duration-300")}
+                                <Button
+                                    className={cn((isDelete || isEdit) ? "w-1/2 left-1/2" : "w-full left-0", "mb-4 absolute transition-all duration-300")}
                                     disabled={isLoading}
                                     // style={{ minWidth: isDelete || isEdit ? "50%" : "100%" }}
                                     type="submit">
 
-                                    {isLoading && <Loader2 className='h-4 w-4 mr-2 animate-spin' />}
+                                    {isLoading && <Loader2 className='h-4 w-4 mr-2 animate-spin'/>}
                                     Submit To
                                     {isEdit ? " Edit" : isDelete ? " Delete" : " View"}
                                 </Button>
