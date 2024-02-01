@@ -33,7 +33,7 @@ function isMobileView() {
     // Get the width of the viewport
     const  width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
     // console.log(width)
-    if (width>768 && width<1030){
+    if (width>=768 && width<1024){
         // console.log(0)
         return 2;
     }else if (width<768){
@@ -66,11 +66,20 @@ export const PasswordsTable = () => {
         setVisible(filtered);
 
     }
+    const [categories, setCategories] = useState<Category[]>([]);
+
+    const getCategories = async () => {
+        const response = await axios.get("/api/category");
+        setCategories(response.data.categories);
+        console.log(response)
+    }
+    useEffect(() => {
+        getCategories();
+    }, []);
+
 
     useEffect(()=>{
         const handleResize = () =>{
-            // const  width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    // console.log(width)
             setSpan(isMobileView())
 
         }
@@ -79,7 +88,8 @@ export const PasswordsTable = () => {
     } ,[])
 
     useEffect(() => {
-        getPasswords()
+        getPasswords();
+        getCategories();
         // const timer = setInterval(() => getPasswords(), 2000);
         // return () => clearInterval(timer);
     }, [newField])
@@ -125,7 +135,7 @@ export const PasswordsTable = () => {
                                 <TableRow key={record.id}>
                                     <TableCell className="hidden md:table-cell ">{index + 1}</TableCell>
                                     <TableCell className="">{record.key}</TableCell>
-                                    <TableCell className="text-center"><PasswordBox password={record} onSubmitChange={() => setNewField(!newField)}/></TableCell>
+                                    <TableCell className="text-center"><PasswordBox categories={categories} password={record} onSubmitChange={() => setNewField(!newField)}/></TableCell>
                             
                                     <TableCell className={"hidden lg:table-cell "}>{record.category.name}</TableCell>
                                     <TableCell className={"hidden lg:table-cell "}>{record.updatedAt.toLocaleString().slice(0, 10)}</TableCell>
