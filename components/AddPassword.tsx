@@ -134,7 +134,7 @@ const AddPassword = ({ onSubmitChange }: { onSubmitChange: () => void }) => {
                                         <FormControl>
                                             <Input
                                                 disabled={isLoading}
-                                                placeholder="Value"
+                                                placeholder="Enter Value"
                                                 {...field}
                                                 type={"password"}
                                             />
