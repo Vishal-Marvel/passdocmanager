@@ -24,7 +24,7 @@ export interface Password {
     id: string
     key: string
     updatedAt: Date
-    creawtedAt: Date
+    createdAt: Date
     category: Category
 
 }
@@ -71,7 +71,7 @@ export const PasswordsTable = () => {
     const getCategories = async () => {
         const response = await axios.get("/api/category");
         setCategories(response.data.categories);
-        console.log(response)
+        // console.log(response)
     }
     useEffect(() => {
         getCategories();
