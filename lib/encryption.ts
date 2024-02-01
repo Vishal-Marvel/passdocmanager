@@ -1,7 +1,7 @@
 "use server"
 import crypto from "crypto";
 
-const salt: string = process.env.NEXT_PUBLIC_ENCRYPTION_KEY;
+const salt: string = process.env.ENCRYPTION_KEY;
 
 export async function encryptReq(password: string, data: string) {
     try {
