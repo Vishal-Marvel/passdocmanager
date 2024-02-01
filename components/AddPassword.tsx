@@ -170,7 +170,7 @@ const AddPassword = ({onSubmitChange}: { onSubmitChange: () => void }) => {
                                         <FormControl>
                                             <SearchableSelect inputOptions={categories.map(cat => cat.name)}
                                                               onSelect={field.onChange}
-                                                              index={0}/>
+                                            />
                                         </FormControl>
                                         <FormMessage/>
                                     </FormItem>
