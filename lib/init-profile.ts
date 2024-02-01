@@ -4,6 +4,7 @@ import {redirect} from "next/navigation";
 
 export const initProfile = async () =>{
     const {userId} = auth();
+    const currentDate = new Date();
     if (!userId){
         return redirectToSignIn();
     }
@@ -15,10 +16,22 @@ export const initProfile = async () =>{
 
 
     if (profile) {
+        
+        if (profile.updatedAt){
+            const profileDate = profile.updatedAt;
+            profileDate.setDate(profileDate.getDate()+  20);
+
+            if (profileDate <= currentDate){
+                return redirect("/setPassword") ;
+            }
+        
+        }else{
+            return redirect("/setPassword") ;
+        }
         return profile;
     }else{
         // console.log(user)
-        return redirect("/signup") ;
+        return redirect("/setPassword") ;
     }
 
 }
