@@ -32,7 +32,7 @@ import {cn} from "@/lib/utils";
 import {decryptReq, encryptReq} from "@/lib/encryption";
 import {Category} from "@prisma/client";
 import {SearchableSelect} from "./SearchableSelect";
-import {PasswordInput} from "@/components/PasswordInput";
+import PasswordInput from "@/components/PasswordInput";
 
 const formSchema = z.object({
     password: z.string().min(8, "Password Is required"),

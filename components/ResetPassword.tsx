@@ -22,7 +22,7 @@ import {encryptReq} from '@/lib/encryption';
 import {toast} from 'sonner';
 import {AlertCircle, ArrowLeft, Check, Loader2, X} from 'lucide-react';
 import {cn} from '@/lib/utils';
-import {PasswordInput} from "@/components/PasswordInput";
+import PasswordInput from "@/components/PasswordInput";
 
 const formSchema = z.object({
 

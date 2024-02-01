@@ -2,9 +2,11 @@ import React, {useEffect, useState} from "react";
 import {Input} from "@/components/ui/input";
 import {Eye, EyeOff} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    placeholder?: string;
+}
 
-
-export const PasswordInput = React.forwardRef(({...props}, ref) => {
+const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(({placeholder, ...props}, ref) => {
     const [view, setView] = useState(false);
     const [isMouseDown, setIsMouseDown] = useState(false);
     const handleMouseDown = () => {
@@ -28,6 +30,7 @@ export const PasswordInput = React.forwardRef(({...props}, ref) => {
     return (
         <div className={"relative"}>
             <Input
+                placeholder={placeholder}
 
                 ref={ref}
                 type={view ? "text" : "password"}
@@ -60,3 +63,5 @@ export const PasswordInput = React.forwardRef(({...props}, ref) => {
         </div>
     )
 });
+
+export default PasswordInput

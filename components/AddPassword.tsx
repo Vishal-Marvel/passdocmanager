@@ -24,7 +24,7 @@ import {toast} from "sonner";
 import {encryptReq} from "@/lib/encryption";
 import {Category} from "@prisma/client";
 import {SearchableSelect} from "./SearchableSelect";
-import {PasswordInput} from "@/components/PasswordInput";
+import PasswordInput from "@/components/PasswordInput";
 
 const formSchema = z.object({
 
@@ -108,6 +108,7 @@ const AddPassword = ({onSubmitChange}: { onSubmitChange: () => void }) => {
             setFocusItem(false);
         }
     }
+    // @ts-ignore
     return (
         <Dialog open={isOpen} onOpenChange={handleDialogClose}>
             <DialogTrigger className={cn(buttonVariants({variant: "default"}), "gap-2 flex w-full md:w-1/3")}>
