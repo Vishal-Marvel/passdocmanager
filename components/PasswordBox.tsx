@@ -70,16 +70,13 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
             category: password.category.name
         }
     });
-    const encryptData = (password: string, data: string) => {
-        setMessage("Encrypting Data")
-        return encryptReq(password, data)
-    }
+
     const isLoading = form.formState.isSubmitting;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
 
         try {
-            const encryptPassword = await encryptData(values.password, values.password);
+            const encryptPassword = encryptReq(values.password, values.password);
             if (isEdit) {
                 if (values.value.length < 1) {
                     form.setError("value", {message: "Value is Required"});
@@ -124,10 +121,10 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                     id: password.id,
                     password: encryptPassword
                 }
-                setMessage("Retriving data...")
+                setMessage("Retrieving data...")
                 const response = (await axios.post("/api/password", data)).data;
                 setMessage("")
-                setNewValue(await decryptReq(values.password, response.value));
+                setNewValue(decryptReq(values.password, response.value));
                 form.reset();
             }
 
@@ -239,7 +236,7 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                                             {value}
 
                                         </span>
-                                        {(newValue != "" && isMouseDown) ? (
+                                        {newValue != "" && (isMouseDown ? (
 
                                             <EyeOff
                                                 className="text-black h-5 cursor-pointer w-5 "
@@ -252,7 +249,7 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                                                 className=" text-black  h-5 cursor-pointer w-5 "
                                                 onMouseDown={handleMouseDown} onTouchStart={handleMouseDown}
                                             />
-                                        )}
+                                        ))}
                                     </div>
                                     {newValue != "" &&
                                         <span className="text-xs mb-2 font-bold">Value is accessible for {time}s</span>

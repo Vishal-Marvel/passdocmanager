@@ -48,16 +48,16 @@ const AddPassword = ({onSubmitChange}: { onSubmitChange: () => void }) => {
         }
     });
     const isLoading = form.formState.isSubmitting;
-    const handlePreSubmit = async (password: string, value: string) => {
+    const handlePreSubmit = (password: string, value: string) => {
         setMessage("Encrypting Data...")
-        const encryptedValue = await encryptReq(password, value);
-        const encryptedPassword = await encryptReq(password, password);
+        const encryptedValue = encryptReq(password, value);
+        const encryptedPassword = encryptReq(password, password);
         return {encryptedValue, encryptedPassword};
     }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const {encryptedValue, encryptedPassword} = await handlePreSubmit(values.password, values.value)
+            const {encryptedValue, encryptedPassword} = handlePreSubmit(values.password, values.value)
             const data = {
                 key: values.key,
                 value: encryptedValue,

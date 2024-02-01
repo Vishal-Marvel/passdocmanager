@@ -71,8 +71,9 @@ export const ResetPassword = ({date}: { date: Date }) => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            const encryptNewPassword = await encryptReq(values.password, values.confirmPassword);
-            const encryptOldPassword = await encryptReq(values.oldPassword, values.oldPassword);
+
+            const encryptNewPassword = encryptReq(values.password, values.confirmPassword);
+            const encryptOldPassword = encryptReq(values.oldPassword, values.oldPassword);
             const data = {
                 oldPassword: encryptOldPassword,
                 viewPassword: encryptNewPassword
