@@ -1,5 +1,5 @@
 "use client"
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Password} from "./PasswordsTable"
 import {
     Dialog,
@@ -27,11 +27,12 @@ import axios from "axios";
 import {Button, buttonVariants} from "./ui/button";
 import {Label} from "./ui/label";
 import qs from "query-string";
-import {AlertCircle, Edit, Eye, Loader2, Trash2, X} from "lucide-react";
+import {AlertCircle, Edit, Eye, EyeOff, Loader2, Trash2, X} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {decryptReq, encryptReq} from "@/lib/encryption";
 import {Category} from "@prisma/client";
 import {SearchableSelect} from "./SearchableSelect";
+import {PasswordInput} from "@/components/PasswordInput";
 
 const formSchema = z.object({
     password: z.string().min(8, "Password Is required"),
@@ -53,7 +54,10 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
     const [time, setTime] = useState(10);
     const [isEdit, setIsEdit] = useState(false);
     const [isDelete, setIsDelete] = useState(false);
+    const [isMouseDown, setIsMouseDown] = useState(false);
     const [message, setMessage] = useState("");
+    const [focusItem, setFocusItem] = useState("");
+
 
     const buttonRef = useRef(null);
 
@@ -136,11 +140,20 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
     };
 
     const handleMouseDown = () => {
+        setIsMouseDown(true);
         setValue(newValue)
     }
     const handleMouseUp = () => {
+        setIsMouseDown(false);
+
         setValue("*************");
     }
+    useEffect(() => {
+        if (value === newValue) {
+            const timer = setInterval(handleMouseUp, 800);
+            return () => clearInterval(timer);
+        }
+    }, [value])
 
     useEffect(() => {
         form.setFocus("password")
@@ -148,7 +161,8 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
     useEffect(() => {
         const timer = setInterval(() => {
             setNewValue("");
-            setValue("*************")
+            setValue("*************");
+            setIsMouseDown(false);
         }, 10000);
         return () => clearInterval(timer);
     }, [newValue])
@@ -171,6 +185,16 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                 form.setFocus("password");
         form.resetField("password");
     }, [isEdit, isDelete])
+    const handleFocusChange = (event) => {
+        if (event.target.id === "react-select-3-input") {
+            setFocusItem(event.target.id);
+        } else {
+            if (focusItem === "react-select-3-input") {
+                form.setFocus("password");
+                setFocusItem("");
+            }
+        }
+    }
 
     const handleOnClose = () => {
         setValue("*************");
@@ -187,7 +211,8 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
             <DialogTrigger className={cn(buttonVariants({variant: "link"}), "m-0")}>
                 <Eye className="h-5 w-5"/>
             </DialogTrigger>
-            <DialogContent className="overflow-hidden h-fit transition-height duration-300 ease-in">
+            <DialogContent className="overflow-hidden h-fit transition-height duration-300 ease-in"
+                           onFocusCapture={handleFocusChange}>
                 <DialogHeader>
                     <DialogTitle>
                         {isEdit ? " Edit" : isDelete ? " Delete" : " View"} Record
@@ -214,13 +239,20 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                                             {value}
 
                                         </span>
-                                        {newValue != "" &&
-                                            <Eye className="cursor-pointer h-5 w-5 m-2"
-                                                 onMouseDown={handleMouseDown}
-                                                 onMouseUp={handleMouseUp}
-                                                 onTouchStart={handleMouseDown}
-                                                 onTouchEnd={handleMouseUp}/>
-                                        }
+                                        {(newValue != "" && isMouseDown) ? (
+
+                                            <EyeOff
+                                                className="text-black h-5 cursor-pointer w-5 "
+                                                onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}
+                                                onTouchCancel={handleMouseUp} onTouchEnd={handleMouseUp}
+                                                onTouchMove={handleMouseUp}
+                                            />
+                                        ) : (
+                                            <Eye
+                                                className=" text-black  h-5 cursor-pointer w-5 "
+                                                onMouseDown={handleMouseDown} onTouchStart={handleMouseDown}
+                                            />
+                                        )}
                                     </div>
                                     {newValue != "" &&
                                         <span className="text-xs mb-2 font-bold">Value is accessible for {time}s</span>
@@ -246,10 +278,9 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                                             <FormItem>
                                                 <FormLabel>Value:</FormLabel>
                                                 <FormControl>
-                                                    <Input
+                                                    <PasswordInput
                                                         placeholder="Enter Value"
                                                         {...field}
-                                                        type={"password"}
                                                     />
                                                 </FormControl>
 
@@ -286,11 +317,10 @@ export const PasswordBox = ({categories, password, onSubmitChange}: Props) => {
                                     <FormItem>
                                         <FormLabel>Password:</FormLabel>
                                         <FormControl>
-                                            <Input
+                                            <PasswordInput
                                                 disabled={isLoading}
                                                 placeholder={("Enter Password set after Login to" + (isEdit ? " Edit " : isDelete ? " Delete " : " view ") + "the record")}
                                                 {...field}
-                                                type={"password"}
                                             />
                                         </FormControl>
                                         <FormMessage/>
