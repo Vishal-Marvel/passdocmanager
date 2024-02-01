@@ -47,7 +47,7 @@ export const SearchableSelect = ({ inputOptions, onSelect, defaultValue }: Props
             setOptions((prev) => [...prev, newOption]);
             setValue(newOption);
             onSelect(newOption.label);
-        }, 1000);
+        }, 300);
     };
 
 
