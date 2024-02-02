@@ -3,7 +3,7 @@ import bcrypt from "bcrypt"
 import crypto from "crypto";
 
 export async function hashString(inputString:string) {
-    const saltRounds = 15;
+    const saltRounds = 10;
     return await bcrypt.hash(inputString, saltRounds);
 }
 

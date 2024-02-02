@@ -74,6 +74,10 @@ export const ResetPassword = ({date}: { date: Date }) => {
 
             const encryptNewPassword = encryptReq(values.password, values.confirmPassword);
             const encryptOldPassword = encryptReq(values.oldPassword, values.oldPassword);
+            if (encryptNewPassword === encryptOldPassword) {
+                toast(<><AlertCircle/><span>New Password must not be same as Old Password</span></>)
+                return;
+            }
             const data = {
                 oldPassword: encryptOldPassword,
                 viewPassword: encryptNewPassword

@@ -26,7 +26,6 @@ export async function POST(
         }
 
         const password = await hashString(viewPassword);
-
         await db.user.update({
             where: {id:user.id},
             data: {
@@ -37,7 +36,7 @@ export async function POST(
 
 
     } catch (error) {
-        console.log("SIGNUP", error)
+        console.log("RESET PASSWORD", error)
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
