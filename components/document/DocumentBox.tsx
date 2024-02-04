@@ -171,7 +171,7 @@ export const DocumentBox = ({categories, documentObj, onSubmitChange}: Props) =>
     return (
         <Dialog open={isOpen} onOpenChange={handleOnClose}>
             <DialogTrigger className={cn(buttonVariants({variant: "link"}), "m-0")}>
-                <Eye className="h-5 w-5"/>
+                <Eye className="h-5 w-5 text-gray-500"/>
             </DialogTrigger>
             <DialogContent className="overflow-hidden h-fit transition-height duration-300 ease-in"
                            onFocusCapture={handleFocusChange}>

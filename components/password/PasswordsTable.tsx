@@ -39,7 +39,7 @@ function isMobileView() {
             return 2;
         } else if (width < 768) {
             // console.log(4)
-            return 0
+            return 1
         } else {
             return 4
         }
@@ -65,10 +65,9 @@ export const PasswordsTable = () => {
     }
     const handleSearch = (value: string) => {
         setSearch(value);
-        if (value != "" && passwords.length) {
-            const filtered = passwords?.filter((password) => password.key.toLowerCase().includes(value.toLowerCase()) || password.category.name.toLowerCase().includes(value.toLowerCase()));
-            setVisible(filtered);
-        }
+        const filtered = passwords?.filter((password) => password.key.toLowerCase().includes(value.toLowerCase()) || password.category.name.toLowerCase().includes(value.toLowerCase()));
+        setVisible(filtered);
+        
 
     }
     const [categories, setCategories] = useState<Category[]>([]);
@@ -83,14 +82,14 @@ export const PasswordsTable = () => {
     }, []);
 
 
-    useEffect(()=>{
-        const handleResize = () =>{
+    useEffect(() => {
+        const handleResize = () => {
             setSpan(isMobileView())
 
         }
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    } ,[])
+    }, [])
 
     useEffect(() => {
         getPasswords();
@@ -107,22 +106,23 @@ export const PasswordsTable = () => {
     return (
         <div className="md:w-[80vw] w-full overflow-clip flex flex-col items-center">
             <div className="md:w-[60vw] flex md:flex-row flex-col gap-4 justify-center items-center m-2">
-                <Input className="border-2 " placeholder="Search Key or Category..." value={search} onChange={(e) => handleSearch(e.target.value)} />
-                <AddPassword onSubmitChange={() => setNewField(!newField)} />
+                <Input className="border-2 " placeholder="Search Key or Category..." value={search}
+                       onChange={(e) => handleSearch(e.target.value)}/>
+                <AddPassword onSubmitChange={() => setNewField(!newField)}/>
             </div>
             {isLoading &&
                 <div className="flex w-full h-[40vh] items-center justify-center">
-                    <Loader2 className="h-10 w-10 animate-spin text-indigo-500" />
+                    <Loader2 className="h-10 w-10 animate-spin text-indigo-500"/>
                 </div>
             }
-            {!isLoading && passwords && passwords.length === 0 &&
+            {!isLoading && passwords.length === 0 &&
                 <div className="flex w-full h-[40vh] items-center justify-center text-2xl font-bold">
                     No Record Found
                 </div>
             }
 
-            {passwords && passwords.length > 0 &&
-            // <div className="flex justify-center w-full">
+            {passwords.length > 0 &&
+                // <div className="flex justify-center w-full">
                 <ScrollArea className={"h-[60vh] md:w-[60vw] w-[80vw] md:m-4 mb-0 transition-all duration-200 ease-in"}>
 
                     <Table className="table-auto">
@@ -136,14 +136,24 @@ export const PasswordsTable = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
+                            {visible.length === 0 &&
+                                <TableRow key={"null"}>
+                                    <TableCell colSpan={span + 1}
+                                               className={" "}>No Matching Record Found</TableCell>
+
+                                </TableRow>
+                            }
                             {visible.map((record, index) => (
                                 <TableRow key={record.id}>
                                     <TableCell className="hidden md:table-cell ">{index + 1}</TableCell>
                                     <TableCell className="">{record.key}</TableCell>
-                                    <TableCell className="text-center"><PasswordBox categories={categories} password={record} onSubmitChange={() => setNewField(!newField)}/></TableCell>
-                            
+                                    <TableCell className="text-center"><PasswordBox categories={categories}
+                                                                                    password={record}
+                                                                                    onSubmitChange={() => setNewField(!newField)}/></TableCell>
+
                                     <TableCell className={"hidden lg:table-cell "}>{record.category.name}</TableCell>
-                                    <TableCell className={"hidden lg:table-cell "}>{record.updatedAt.toLocaleString().slice(0, 10)}</TableCell>
+                                    <TableCell
+                                        className={"hidden lg:table-cell "}>{record.updatedAt.toLocaleString().slice(0, 10)}</TableCell>
 
                                 </TableRow>
                             ))}

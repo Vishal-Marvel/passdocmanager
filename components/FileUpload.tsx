@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import {UploadButton, UploadDropzone} from "@/lib/uploadthing";
 
-import "@uploadthing/react/styles.css";
+// import "@uploadthing/react/styles.css";
 
 interface FileUploadProps {
     onChange: (url?: string) => void;
@@ -63,7 +63,7 @@ export const FileUpload = ({
 
     return (
         <UploadDropzone
-            className={""}
+            className={"h-32 border-dashed"}
             endpoint={"document"}
             onClientUploadComplete={(res) => {
                 onChange(res?.[0].url);

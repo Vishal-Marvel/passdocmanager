@@ -42,7 +42,7 @@ function isMobileView() {
             return 2;
         } else if (width < 768) {
             // console.log(4)
-            return 0
+            return 1
         } else {
             return 4
         }
@@ -68,10 +68,9 @@ export const DocumentTable = () => {
     }
     const handleSearch = (value: string) => {
         setSearch(value);
-        if (value != "" && documents.length) {
-            const filtered = documents?.filter((document) => document.name.toLowerCase().includes(value.toLowerCase()) || document.category.name.toLowerCase().includes(value.toLowerCase()));
-            setVisible(filtered);
-        }
+        const filtered = documents?.filter((document) => document.name.toLowerCase().includes(value.toLowerCase()) || document.category.name.toLowerCase().includes(value.toLowerCase()));
+        setVisible(filtered);
+
     }
     const [categories, setCategories] = useState<Category[]>([]);
 
@@ -119,15 +118,16 @@ export const DocumentTable = () => {
                     <Loader2 className="h-10 w-10 animate-spin text-indigo-500"/>
                 </div>
             }
-            {!isLoading && documents && documents.length === 0 &&
+            {!isLoading && documents.length === 0 &&
                 <div className="flex w-full h-[40vh] items-center justify-center text-2xl font-bold">
                     No Record Found
                 </div>
             }
 
-            {documents && documents.length > 0 &&
+            {documents.length > 0 &&
                 // <div className="flex justify-center w-full">
-                <ScrollArea className={"h-[60vh] md:w-[60vw] w-[80vw] md:m-4 mb-0 transition-all duration-200 ease-in"}>
+                <ScrollArea
+                    className={"h-[60vh] md:w-[60vw] w-[80vw] md:m-4 mb-0 transition-all duration-200 ease-out"}>
 
                     <Table className="table-auto">
                         <TableHeader className={"sticky top-0 bg-secondary"}>
@@ -140,6 +140,13 @@ export const DocumentTable = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
+                            {visible.length === 0 &&
+                                <TableRow key={"null"}>
+                                    <TableCell colSpan={span + 1}
+                                               className={" "}>No Matching Record Found</TableCell>
+
+                                </TableRow>
+                            }
                             {visible.map((record, index) => (
                                 <TableRow key={record.id}>
                                     <TableCell className="hidden md:table-cell ">{index + 1}</TableCell>
