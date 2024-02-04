@@ -16,6 +16,7 @@ export function encryptReq(password: string, data: string) {
     }
 }
 
+
 export function decryptReq(password: string, encryptedString: string) {
     const key = crypto.pbkdf2Sync(password, salt, 20000, 32, 'sha512');
 

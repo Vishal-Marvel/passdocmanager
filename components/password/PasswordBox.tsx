@@ -9,7 +9,7 @@ import {
     DialogTitle,
     DialogTrigger
 
-} from "./ui/dialog"
+} from "@/components/ui/dialog"
 import {
     Tooltip,
     TooltipContent,
@@ -19,19 +19,18 @@ import {
 
 import {toast} from "sonner"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
-import {Button, buttonVariants} from "./ui/button";
-import {Label} from "./ui/label";
+import {Button, buttonVariants} from "@/components/ui/button";
+import {Label} from "@/components/ui/label";
 import qs from "query-string";
 import {AlertCircle, Edit, Eye, EyeOff, Loader2, Trash2, X} from "lucide-react";
 import {cn} from "@/lib/utils";
 import {decryptReq, encryptReq} from "@/lib/encryption";
 import {Category} from "@prisma/client";
-import {SearchableSelect} from "./SearchableSelect";
+import {SearchableSelect} from "../SearchableSelect";
 import PasswordInput from "@/components/PasswordInput";
 
 const formSchema = z.object({

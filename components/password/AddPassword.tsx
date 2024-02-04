@@ -23,7 +23,7 @@ import {cn} from "@/lib/utils";
 import {toast} from "sonner";
 import {encryptReq} from "@/lib/encryption";
 import {Category} from "@prisma/client";
-import {SearchableSelect} from "./SearchableSelect";
+import {SearchableSelect} from "@/components/SearchableSelect";
 import PasswordInput from "@/components/PasswordInput";
 
 const formSchema = z.object({
@@ -65,11 +65,11 @@ const AddPassword = ({onSubmitChange}: { onSubmitChange: () => void }) => {
                 category: values.category
             }
             setMessage("Saving data...")
-            await axios.post("/api/addPassword", data);
+            await axios.post("/api/password/addPassword", data);
             setMessage("")
             toast("Record Added");
             onSubmitChange();
-            getCategories();
+            await getCategories();
             setOpen(false);
             form.reset()
         } catch (error: any) {
@@ -89,13 +89,16 @@ const AddPassword = ({onSubmitChange}: { onSubmitChange: () => void }) => {
         const response = await axios.get("/api/category");
         setCategories(response.data.categories);
     }
+
     useEffect(() => {
-        getCategories();
+        getCategories().then();
     }, [])
+
     const handleDialogClose = () => {
         setOpen(!isOpen);
         form.reset();
     }
+
     const handleFocusChange = (event) => {
         // console.log(event.target.id)
         if (event.target.id.includes("react-select")) {

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+"use client"
+import React, {useEffect, useState} from 'react';
 
 import CreatableSelect from 'react-select/creatable';
 
@@ -19,13 +20,14 @@ const createOption = (label: string) => ({
 });
 
 
-
-export const SearchableSelect = ({ inputOptions, onSelect, defaultValue }: Props) => {
+export const SearchableSelect = ({inputOptions, onSelect, defaultValue}: Props) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [options, setOptions] = useState<Option[]>(inputOptions.map(createOption));
     const [value, setValue] = useState<Option | null>(defaultValue && createOption(defaultValue));
-
+    useEffect(() => {
+        setOptions(inputOptions.map(createOption))
+    }, [inputOptions])
     // Filter out duplicates initially
     useEffect(() => {
         const filteredOptions = options.reduce<Option[]>((acc, option) => {
@@ -58,7 +60,7 @@ export const SearchableSelect = ({ inputOptions, onSelect, defaultValue }: Props
 
     return (
         <CreatableSelect
-        form='submit'
+            form='submit'
             className='text-sm'
             placeholder={"Select Category..."}
             isClearable

@@ -18,27 +18,35 @@ model User {
   updatedAt    DateTime?  @updatedAt
   Password     Password[]
   Category     Category[]
+  Document     Document[]
 }
 
-model Docuement {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String
-  name     String
-  document Bytes
+model Document {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String    @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  salt       String
+  categoryId String?   @db.ObjectId // Add a nullable field to store the Category ID
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull) // Define the relationship
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  document   String
+  name       String
 }
 
 model Category {
   id       String     @id @default(auto()) @map("_id") @db.ObjectId
-  name     String     
+  name     String
   Password Password[]
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId  String     @db.ObjectId
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String     @db.ObjectId
+  Document Document[]
 }
 
 model Password {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   userId     String    @db.ObjectId
-  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   key        String
   value      String
   salt       String

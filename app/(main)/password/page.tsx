@@ -1,5 +1,5 @@
 import CustomSignOutButton from "@/components/CustomSignOutButton";
-import { PasswordsTable } from "@/components/PasswordsTable";
+import {PasswordsTable} from "@/components/password/PasswordsTable";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { initProfile } from "@/lib/init-profile";

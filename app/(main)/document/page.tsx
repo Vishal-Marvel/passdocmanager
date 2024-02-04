@@ -1,7 +1,8 @@
 import CustomSignOutButton from "@/components/CustomSignOutButton";
 import { Frown } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import {buttonVariants} from "@/components/ui/button";
+import {DocumentTable} from "@/components/document/DocumentsTable";
 
 export default function Document() {
     return (
@@ -12,9 +13,7 @@ export default function Document() {
             </div>
             <div className={"w-full justify-center items-center flex flex-col pt-4"}>
                 <h1 className={"font-bold text-2xl m-2 p-2 font-sans"}>Documents</h1>
-                <span className="text-center flex gap-3">
-                    <Frown /> This page is under Construction, Visit back later
-                </span>
+                <DocumentTable/>
             </div>
         </div>
     )

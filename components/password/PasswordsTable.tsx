@@ -1,11 +1,11 @@
 "use client"
 
 import axios from "axios";
-import {  useEffect, useState } from "react";
-import { PasswordBox } from "./PasswordBox";
-import { Input } from "./ui/input";
-import { Loader2 } from "lucide-react";
-import AddPassword from "./AddPassword";
+import {useEffect, useState} from "react";
+import {PasswordBox} from "@/components/password/PasswordBox";
+import {Input} from "@/components/ui/input";
+import {Loader2} from "lucide-react";
+import AddPassword from "@/components/password/AddPassword";
 import {
     Table,
     TableBody,
@@ -16,8 +16,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { ScrollArea } from "./ui/scroll-area";
-import { Category } from "@prisma/client";
+import {ScrollArea} from "@/components/ui/scroll-area";
+import {Category} from "@prisma/client";
 
 
 export interface Password {
@@ -30,17 +30,19 @@ export interface Password {
 }
 
 function isMobileView() {
-    // Get the width of the viewport
-    const  width  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    // console.log(width)
-    if (width>=768 && width<1024){
-        // console.log(0)
-        return 2;
-    }else if (width<768){
-        // console.log(4)
-        return 0
-    }else{
-        return 4
+    if (window) {
+        // Get the width of the viewport
+        const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        // console.log(width)
+        if (width >= 768 && width < 1024) {
+            // console.log(0)
+            return 2;
+        } else if (width < 768) {
+            // console.log(4)
+            return 0
+        } else {
+            return 4
+        }
     }
 }
 
@@ -58,12 +60,15 @@ export const PasswordsTable = () => {
             .then(r => r.data)
             .catch(e => console.error(e))
         setPasswords(password_data);
+        setVisible(password_data)
         setIsLoading(false);
     }
     const handleSearch = (value: string) => {
         setSearch(value);
-        const filtered = passwords?.filter((password) => password.key.toLowerCase().includes(value.toLowerCase())|| password.category.name.toLowerCase().includes(value.toLowerCase()));
-        setVisible(filtered);
+        if (value != "" && passwords.length) {
+            const filtered = passwords?.filter((password) => password.key.toLowerCase().includes(value.toLowerCase()) || password.category.name.toLowerCase().includes(value.toLowerCase()));
+            setVisible(filtered);
+        }
 
     }
     const [categories, setCategories] = useState<Category[]>([]);

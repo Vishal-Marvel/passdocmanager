@@ -14,7 +14,6 @@ export async function POST(
     try {
         const user = await currentUser();
         const { viewPassword } = await req.json();
-        const currentDate = new Date();
         if (!user) {
             return new NextResponse("UnAuthenticated", { status: 401 })
         }
